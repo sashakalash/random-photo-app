@@ -1,1 +1,4 @@
-<app-photo-item *ngFor="let photo of photos | async"></app-photo-item>
+<ng-container *ngFor="let photo of photos$ | async">
+  <app-photo-item [url]="photo"></app-photo-item>
+</ng-container>
+

@@ -13,6 +13,7 @@ import { SharedModule } from './shared/shared.module';
 import { HttpClientModule } from '@angular/common/http';
 import { StoreModule } from '@ngrx/store';
 import { photoReducer } from './store/photo/reducer';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -29,7 +30,8 @@ import { photoReducer } from './store/photo/reducer';
     MatToolbarModule,
     MatButtonToggleModule,
     HttpClientModule,
-    StoreModule.forRoot({ photosState: photoReducer })
+    StoreModule.forRoot({ photosState: photoReducer }),
+    FormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

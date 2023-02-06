@@ -1,4 +1,6 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges, OnInit } from '@angular/core';
+import { environment } from 'src/environments/environment';
+import { PhotoService } from '../../services/photo.service';
 
 @Component({
   selector: 'app-photo-item',
@@ -6,6 +8,5 @@ import { Component, Input } from '@angular/core';
   styleUrls: ['./photo-item.component.scss']
 })
 export class PhotoItemComponent {
-  @Input() photo: string = '';
-
+  @Input() url: string;
 }
