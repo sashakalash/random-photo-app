@@ -1,29 +1,55 @@
-import { debounceTime, forkJoin, interval, repeat } from 'rxjs';
-import { AfterViewInit, Component, ElementRef, OnInit, TemplateRef, ViewChild } from '@angular/core';
-import { Store } from '@ngrx/store';
-import { fromEvent, map, Observable, of, switchMap, tap } from 'rxjs';
+import { AfterContentChecked, AfterViewChecked } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import { Observable, fromEvent, map, tap, debounceTime } from 'rxjs';
+import { IPhoto } from '../../models/photo.interface';
+
 import { PhotoService } from '../../services/photo.service';
-import * as PHOTO_ACTIONS from 'src/app/store/photo/actions';
-import { BehaviorSubject } from 'rxjs';
 
 @Component({
   selector: 'app-photo-list',
   templateUrl: './photo-list.component.html',
   styleUrls: ['./photo-list.component.scss']
 })
-export class PhotoListComponent implements OnInit {
+export class PhotoListComponent implements OnInit, AfterViewInit, AfterViewChecked {
+  @ViewChild('container', { read: ElementRef }) containerRef: ElementRef;
 
-  photos$: BehaviorSubject<string[]> = new BehaviorSubject([]);
+  scrolledHeight: Observable<number>;
+  photos$: Observable<IPhoto[]> = this.photoService.photos$;
+  isLoading: boolean = this.photoService.isLoading;
+
+  get wrapperHeight(): number {
+    return this.photoService.wrapperHeight;
+  }
 
   constructor(private photoService: PhotoService,
-    private store: Store,
   ) { }
+  ngAfterViewChecked(): void {
+    console.log('ngAfterViewChecked')
+  }
 
+  ngAfterViewInit(): void {
+    this.photoService.offsetTop = this.containerRef.nativeElement.offsetTop;
 
+    this.scrolledHeight = fromEvent(document, 'scroll').pipe(
+      debounceTime(300),
+      map(() => (window.pageYOffset || this.containerRef.nativeElement.scrollTop) - (this.containerRef.nativeElement.clientTop || 0)),
+      tap(() => {
+        if (this.photoService.isScrolledToBottom()) {
+          this.photoService.increaseWrapperHeight();
+        }
+      }),
+    )
+
+    this.scrolledHeight.subscribe((height: number) => {
+      if (this.photoService.isLoadingPhotoRequired(height)) {
+        this.photoService.getPhotos(height)
+      }
+    });
+
+    this.photoService.getPhotos()
+  }
 
   ngOnInit() {
-    this.photoService.getRandomPhoto().pipe(repeat({ count: 5, delay: 300 }))
-      .subscribe(url => this.photos$.next([...this.photos$.value, url]));
   }
 
 }
