@@ -1,0 +1,3 @@
+<div class="list-wrapper">
+  <app-photo-item *ngFor="let photo of photos" [image]="photo" [routerLink]="['/photos/' + photo.id]"></app-photo-item>
+</div>

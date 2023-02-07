@@ -1,15 +1,17 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FavoritePhotoComponent } from './components/favorite-photo/favorite-photo.component';
-
-
+import { FavoritePhotoListComponent } from './components/favorite-photo-list/favorite-photo-list.component';
+import { SharedModule } from '../shared/shared.module';
+import { FavoritesRoutingModule } from './favorites-routing.module';
 
 @NgModule({
   declarations: [
-    FavoritePhotoComponent
+    FavoritePhotoListComponent
   ],
   imports: [
-    CommonModule
+    CommonModule,
+    SharedModule,
+    FavoritesRoutingModule,
   ]
 })
 export class FavoritesModule { }

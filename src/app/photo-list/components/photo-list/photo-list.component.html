@@ -1,7 +1,8 @@
 <div class="list-wrapper" [style.height]="wrapperHeight + 'px'" #container>
   <ng-container *ngFor="let photo of photos$ | async">
-    <app-photo-item [image]="photo"></app-photo-item>
+    <app-photo-item [image]="photo" (click)="addToFavorite(photo)"></app-photo-item>
   </ng-container>
+  <mat-spinner *ngIf="isLoading"></mat-spinner>
 </div>
 
 
