@@ -1,12 +1,14 @@
-import { Component, Input, OnChanges, SimpleChanges, OnInit } from '@angular/core';
-import { environment } from 'src/environments/environment';
-import { PhotoService } from '../../services/photo.service';
+import { Component, Input,} from '@angular/core';
+import { IPhoto } from '../../models/photo.interface';
 
 @Component({
   selector: 'app-photo-item',
-  templateUrl: './photo-item.component.html',
-  styleUrls: ['./photo-item.component.scss']
+  template: `
+  <mat-card>
+    <img mat-card-image [src]="image?.url" [ngStyle]="{'height': image.height, 'width': image.width}" alt="random-photo">
+  </mat-card>
+  `,
 })
 export class PhotoItemComponent {
-  @Input() url: string;
+  @Input() image: IPhoto;
 }

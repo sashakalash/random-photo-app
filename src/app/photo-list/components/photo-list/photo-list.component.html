@@ -1,4 +1,7 @@
-<ng-container *ngFor="let photo of photos$ | async">
-  <app-photo-item [url]="photo"></app-photo-item>
-</ng-container>
+<div class="list-wrapper" [style.height]="wrapperHeight + 'px'" #container>
+  <ng-container *ngFor="let photo of photos$ | async">
+    <app-photo-item [image]="photo"></app-photo-item>
+  </ng-container>
+</div>
+
 
