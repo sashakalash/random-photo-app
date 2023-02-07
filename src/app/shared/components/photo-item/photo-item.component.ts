@@ -1,4 +1,4 @@
-import { Component, Input,} from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { IPhoto } from '../../models/photo.interface';
 
 @Component({
@@ -8,6 +8,7 @@ import { IPhoto } from '../../models/photo.interface';
     <img mat-card-image [src]="image?.url" [ngStyle]="{'height': image.height, 'width': image.width}" alt="random-photo">
   </mat-card>
   `,
+  styles: [`img { cursor: pointer; }`]
 })
 export class PhotoItemComponent {
   @Input() image: IPhoto;

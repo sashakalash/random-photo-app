@@ -11,7 +11,7 @@ export class ApiPhotoService {
   constructor(private http: HttpClient) { }
 
   getRandomPhoto(): Observable<string> {
-    return this.http.get<string>(environment.photo.getRandomPhotoUri).pipe(
+    return this.http.get<string>(environment.api.photo.getRandomPhotoUri).pipe(
       catchError((er: HttpErrorResponse) => of(er.url))
     )
   }

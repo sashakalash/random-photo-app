@@ -1,15 +1,18 @@
-import { environment } from 'src/environments/environment';
-import { IPhoto } from './../models/photo.interface';
+import { IPhoto } from '../../shared/models/photo.interface';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, catchError, combineLatest, concat, delay, forkJoin, Observable, of, repeat, switchMap, tap, zip } from "rxjs";
+import { BehaviorSubject, finalize, Observable, repeat } from "rxjs";
 import { ApiPhotoService } from './api-photo.service';
+import { PHOTO_PARAMS } from '../constants';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PhotoService {
+
   private wrapperHeight_: number = window.innerHeight * 2;
-  private initialPhoto: IPhoto = { url: '', width: environment.photo.width, height: environment.photo.width}
+  private initialPhoto: IPhoto = { id: null, url: '', width: PHOTO_PARAMS.width, height: PHOTO_PARAMS.height }
+  private readonly PHOTO_HEIGHT_BORDER_BOX = (PHOTO_PARAMS.height + PHOTO_PARAMS.margin * 2);
+  private readonly PHOTO_WIDTH_BORDER_BOX = (PHOTO_PARAMS.width + PHOTO_PARAMS.margin * 2);
 
   private photosSubject$: BehaviorSubject<IPhoto[]> = new BehaviorSubject([]);
   photos$: Observable<IPhoto[]> = this.photosSubject$.asObservable();
@@ -18,15 +21,19 @@ export class PhotoService {
   isLoading: boolean;
 
   get photosInRowSum(): number {
-    return Math.floor(((window.innerWidth) / 220));
+    return Math.floor(window.innerWidth / this.PHOTO_WIDTH_BORDER_BOX);
   }
 
   get innitPhotosInColumnSum(): number {
-    return Math.floor((window.innerHeight - this.offsetTop) / 320);
+    return Math.floor((window.innerHeight - this.offsetTop) / this.PHOTO_HEIGHT_BORDER_BOX);
   }
 
   get initCount(): number {
     return this.innitPhotosInColumnSum * this.photosInRowSum;
+  }
+
+  get currentPhotosSum(): number {
+    return this.photosSubject$.value.length;
   }
 
   get wrapperHeight(): number {
@@ -37,40 +44,39 @@ export class PhotoService {
     this.wrapperHeight_ = val;
   }
 
-  get currentPhotoCount(): number {
-    return this.photosSubject$.value.length;
-  }
-
-  constructor(private apiPhotoService: ApiPhotoService,
-  ) { }
+  constructor(private apiPhotoService: ApiPhotoService) { }
 
   private addPhotoToList(url: string): void {
-    this.photosSubject$.next([...this.photosSubject$.value, {...this.initialPhoto, url }])
+    const id = `${Math.random() * 10000}`;
+    this.photosSubject$.next([...this.photosSubject$.value, { ...this.initialPhoto, url, id }])
   }
 
   private getCount(height: number): number {
-    return height - 320 > 0 ? Math.floor(height / 320) * this.photosInRowSum : this.photosInRowSum;
+    return (height - this.PHOTO_HEIGHT_BORDER_BOX) > 0
+      ? Math.floor(height / this.PHOTO_HEIGHT_BORDER_BOX) * this.photosInRowSum
+      : this.photosInRowSum;
   }
 
   getPhotos(height?: number): void {
     this.isLoading = true;
-
     const count = height ? this.getCount(height) : this.initCount;
     this.apiPhotoService.getRandomPhoto().pipe(
-      repeat({ count, delay: 300 }))
+      repeat({ count, delay: PHOTO_PARAMS.delay }),
+      finalize(() => this.isLoading = false)
+    )
       .subscribe(url => this.addPhotoToList(url));
   }
 
   isScrolledToBottom(): boolean {
-    return (window.innerHeight + window.scrollY) >= this.wrapperHeight;
+    return (window.innerHeight + window.scrollY) >= this.wrapperHeight_;
   }
 
   increaseWrapperHeight(): void {
-    this.wrapperHeight += window.innerHeight;
+    this.wrapperHeight_ += window.innerHeight;
   }
 
   isLoadingPhotoRequired(height: number): boolean {
-    return !this.isLoading && (this.currentPhotoCount < this.initCount + this.getCount(height));
+    return !this.isLoading && (this.currentPhotosSum < this.initCount + this.getCount(height));
   }
 }
 

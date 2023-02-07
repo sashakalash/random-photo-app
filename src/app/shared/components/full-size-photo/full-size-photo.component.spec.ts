@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { FavoritePhotoComponent } from './favorite-photo.component';
+import { FullSizePhotoComponent } from './full-size-photo.component';
 
-describe('FavoritePhotoComponent', () => {
-  let component: FavoritePhotoComponent;
-  let fixture: ComponentFixture<FavoritePhotoComponent>;
+describe('FullSizePhotoComponent', () => {
+  let component: FullSizePhotoComponent;
+  let fixture: ComponentFixture<FullSizePhotoComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ FavoritePhotoComponent ]
+      declarations: [ FullSizePhotoComponent ]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(FavoritePhotoComponent);
+    fixture = TestBed.createComponent(FullSizePhotoComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
